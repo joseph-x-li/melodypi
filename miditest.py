@@ -3,8 +3,9 @@ from mido import MidiFile
 import serial
 from pprint import pprint
 import struct
+import time
 
-mid = MidiFile('../Marunouchi.mid')
+mid = MidiFile('../tester.mid')
 port = "/dev/ttyUSB0"
 
 
@@ -14,27 +15,22 @@ def createMessage(note, onOff = False):
         return None
     note = note - 53 # conversion to zero indexed
     if onOff:
-        emptyMsg = emptyMsg | 0b10000000
+        emptyMsg = emptyMsg | 0b01000000
     emptyMsg += note
     return emptyMsg
 
-USB = serial.Serial(port, 115200)
+USB = serial.Serial(port, 9600)
 USB.flushInput()
+time.sleep(3)
 
 
 for msg in mid.play():
     if not (msg.type == 'note_on' or msg.type == 'note_off'):
         continue
     note = msg.note
-    print("NOTE: {}".format(note - 53))
+    print("NOTE: {}, {}".format(note - 53, "ON" if msg.type == 'note_on' else "OFF"))
     onOff = msg.type == 'note_on'
     msgChar = createMessage(note, onOff)
     if msgChar is None:
         continue
-    USB.write(msgChar)
-    # print(struct.pack('>B', msgChar))
-    print(msgChar)
-    print(msg)
-
-
-# USB.write(defaultString.encode('utf-8'))
+    USB.write(struct.pack('>B', msgChar))
