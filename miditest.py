@@ -12,10 +12,10 @@ port = "/dev/ttyUSB0"
 def createMessage(note, onOff = False):
     emptyMsg = 0b00000000
     if not (note >= 53 and note <= 89): # ONLY NOTES F3(53) => F6(89)
-        return None
+        return None   # modify to accept out of range notes and transpose it up/down
     note = note - 53 # conversion to zero indexed
     if onOff:
-        emptyMsg = emptyMsg | 0b01000000
+        emptyMsg = emptyMsg | 0b01000000 # Using 7 bit ascii
     emptyMsg += note
     return emptyMsg
 
