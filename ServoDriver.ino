@@ -5,8 +5,6 @@
 Adafruit_PWMServoDriver pwm1 = Adafruit_PWMServoDriver(0x40);
 Adafruit_PWMServoDriver pwm2 = Adafruit_PWMServoDriver(0x41);
 Adafruit_PWMServoDriver pwm3 = Adafruit_PWMServoDriver(0x42);
-
-bool newMSG = true;
 // you can also call it with a different address you want
 //Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x41);
 
@@ -20,7 +18,11 @@ bool newMSG = true;
 #define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
-bool servoArray[38];
+#define KEYBOARD_WIDTH 38
+
+bool servoArray[38]; //change this to use constants
+bool newMSG = true;
+
 
 int tryParseSerial()
 {
@@ -35,11 +37,12 @@ int tryParseSerial()
     return -1;
   }
   
+  //next three lines could be done in one line, but is left as is for readability.
   bool onOff = true;
   if(((int)receivedChar)<64)
     onOff = false; // if it is an OFF message
   
-  receivedChar = receivedChar & '?'; //mask off front part using question mark LOL
+  receivedChar = receivedChar & '?'; //mask off front part using question mark's ascii number
   if(0<=(int)receivedChar && (int)receivedChar<38)
     servoArray[receivedChar] = onOff;
   
