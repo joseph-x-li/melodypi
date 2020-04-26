@@ -42,7 +42,7 @@ int tryParseSerial()
   if(((int)receivedChar)<64)
     onOff = false; // if it is an OFF message
   
-  receivedChar = receivedChar & '?'; //mask off front part using question mark's ascii number
+  receivedChar = receivedChar & '?'; //mask off front part using question mark's ascii value
   if(0<=(int)receivedChar && (int)receivedChar<38)
     servoArray[receivedChar] = onOff;
   
@@ -75,7 +75,8 @@ void setServos(Adafruit_PWMServoDriver pwm1, Adafruit_PWMServoDriver pwm2, Adafr
 }
 
 
-void setup() {
+void setup() 
+{
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
@@ -103,7 +104,8 @@ void setup() {
   }
 }
 
-void loop() {
+void loop() 
+{
   int index = tryParseSerial();
   if(newMSG)
   {
