@@ -18,9 +18,11 @@ class FileParser:
     def __repr__(self):
         def helper(x): 
             if x == 0: return ""
-            return "Up" if x > 0 else "Down"
-        retVal = f"Filename: {self.filename}\n Speed: {self.speed}x\n Transposed {helper(self.transpose)} By: {self.transpose}\n"
-        retVal += f"Is Double Width: {self.doubleWidth}\n Is Note Wrapping On: {self.noteWrapping}"
+            return "Up " if x > 0 else "Down "
+        retVal = f"Filename: {self.filename}\nSpeed: {self.speed}x\nTransposed {helper(self.transpose)}By: {abs(self.transpose)} semitone{'' if abs(self.transpose) == 1 else 's'}\n"
+        retVal += f"Is Double Width: {self.doubleWidth}\nIs Note Wrapping On: {self.noteWrapping}"
+        retVal = "\n------------------------------------------------------------\n" + retVal
+        retVal += "\n------------------------------------------------------------\n"
         return retVal
 
     def setTranspose(self, toThis):
@@ -39,6 +41,8 @@ class FileParser:
         self.speed = toThis
 
     def play(self):
+        if self.isPlaying:
+            return None
         assert(False == True)
         #random shit
 
@@ -49,3 +53,9 @@ class FileParser:
     def restart(self):
         assert(False == True)
         #random shit
+
+    # def __createNote(self, )
+
+#unit test
+x = FileParser()
+print(x)
