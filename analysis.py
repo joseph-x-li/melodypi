@@ -22,7 +22,7 @@ def analyze(mid, transpose=True, wrap=True, merge=False):
         for i, track in enumerate(mid.tracks):
             print(f"Track {i}: {track.name}")
             for msg in track:
-                if msg.type == 'note_on':
+                if msg.type in ('note_on', 'note_off'):
                     tracksums[msg.note] += 1
         
         totalevents = sum(tracksums)
@@ -48,7 +48,7 @@ def analyze(mid, transpose=True, wrap=True, merge=False):
         for i, track in enumerate(mid.tracks):
             print(f"Track {i}: {track.name}")
             for msg in track:
-                if msg.type == 'note_on':
+                if msg.type in ('note_on', 'note_off'):
                     msg.note += realtranspose
                     
         print(f"Transposed tracks {'up' if realtranspose > 0 else 'down'} by {abs(realtranspose)} semitones")
@@ -60,21 +60,15 @@ def analyze(mid, transpose=True, wrap=True, merge=False):
         for i, track in enumerate(mid.tracks):
             print(f"Track {i}: {track.name}")
             for msg in track:
-                if msg.type == 'note_on':
+                if msg.type in ('note_on', 'note_off'):
                     if msg.note < llimit:
                         diff = llimit - msg.note
-                        octave, mod = divmod(diff, 12)
-                        newnote = 12 * ((diff - 1) // 12 + 1) + msg.note
-                        # print(f"Note {msg.note}\twrapped to\t{newnote}")
-                        msg.note = newnote
+                        msg.note += 12 * ((diff - 1) // 12 + 1)
                         wrappedup += 1
                         
                     if msg.note > rlimit:
                         diff = msg.note - rlimit
-                        octave, mod = divmod(diff, 12)
-                        newnote = msg.note - 12 * ((diff - 1) // 12 + 1)
-                        # print(f"Note {msg.note}\twrapped to\t{newnote}")
-                        msg.note = newnote
+                        msg.note -= 12 * ((diff - 1) // 12 + 1)
                         wrappeddn += 1
                         
         print(f"{wrappedup} note events were wrapped up")
