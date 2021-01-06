@@ -28,7 +28,7 @@ def note2beep(note):
     
 
 
-mid = analyze(MidiFile('intl.mid'), merge=True)
+mid = analyze(MidiFile('Flying.mid'), merge=True)
 
 mid.save("bruh.mid")
 

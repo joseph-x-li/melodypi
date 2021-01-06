@@ -1,24 +1,29 @@
 from mido import MidiFile, merge_tracks
 
-def analyze(mid, transpose=True, wrap=True, merge=False):
+def analyze(mid, transpose=None, wrap=True, merge=False):
     """Analyze a midi file to play better on a melodica with only 37 notes.
     
     Only notes 2F(53) => 5F(89) are playable.
     
-    The provided file must not contain extraneous tracks.
+    The provided file must not contain extraneous tracks e.g. drum tracks.
 
     Args:
         mid (mido.MidiFile): MIDI file to analyze
-        transpose (bool, optional): Allow transposition of all tracks to fit melodica range. Defaults to True.
+        transpose (int, optional): Allow transposition of all tracks to fit melodica range. 
+            Set to None to automatically transpose.
+            Set to an integer to manually audjust transpose. If transpose = 5, all tracks will be 
+            transposed up by 5 semitones.
+            Defaults to None.
         wrap (bool, optional): After transposition (if it was enabled), 
             wrap them to the closest playable octave. 
             For example, (-1G, 0G, 1G) => 2G. Defaults to True.
         merge (bool, optional): Merge separate tracks together. Defaults to False.
     """
     
-    if transpose:
+    # autotranspose
+    if transpose is None:
         tracksums = [0 for _ in range(128)]
-        print(f"Scanning...")
+        print(f"Initiating Automatic Transposition...\nScanning...")
         for i, track in enumerate(mid.tracks):
             print(f"Track {i}: {track.name}")
             for msg in track:
@@ -44,6 +49,11 @@ def analyze(mid, transpose=True, wrap=True, merge=False):
             if answer is None or coverage >= answercoverage:
                 answercoverage, answer = coverage, t
         realtranspose = 53 - answer
+    else:
+        realtranspose = transpose
+    
+    # transpose
+    if realtranspose != 0:
         print(f"Transposing...")
         for i, track in enumerate(mid.tracks):
             print(f"Track {i}: {track.name}")
@@ -52,7 +62,8 @@ def analyze(mid, transpose=True, wrap=True, merge=False):
                     msg.note += realtranspose
                     
         print(f"Transposed tracks {'up' if realtranspose > 0 else 'down'} by {abs(realtranspose)} semitones")
-                    
+
+    # autowrap
     if wrap:
         llimit, rlimit = 53, 89
         wrappedup = wrappeddn = 0
@@ -73,7 +84,8 @@ def analyze(mid, transpose=True, wrap=True, merge=False):
                         
         print(f"{wrappedup} note events were wrapped up")
         print(f"{wrappeddn} note events were wrapped down")
-        
+    
+    # merge    
     if merge:
         mid.tracks.append(merge_tracks(mid.tracks))
         del mid.tracks[:-1]
