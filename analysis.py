@@ -1,10 +1,11 @@
 from mido import MidiFile, merge_tracks
 
+
 def analyze(mid, transpose=None, wrap=True, merge=False):
     """Analyze a midi file to play better on a melodica with only 37 notes.
-    
+
     Only notes 2F(53) => 5F(89) are playable.
-    
+
     The provided file must not contain extraneous tracks e.g. drum tracks.
 
     Args:
@@ -19,7 +20,7 @@ def analyze(mid, transpose=None, wrap=True, merge=False):
             For example, (-1G, 0G, 1G) => 2G. Defaults to True.
         merge (bool, optional): Merge separate tracks together. Defaults to False.
     """
-    
+
     # autotranspose
     if transpose is None:
         tracksums = [0 for _ in range(128)]
@@ -29,7 +30,7 @@ def analyze(mid, transpose=None, wrap=True, merge=False):
             for msg in track:
                 if msg.type in ('note_on', 'note_off'):
                     tracksums[msg.note] += 1
-        
+
         totalevents = sum(tracksums)
 
         print(f"Scanned {totalevents} note events")
@@ -39,7 +40,7 @@ def analyze(mid, transpose=None, wrap=True, merge=False):
         for x in tracksums:
             prefixes.append(running)
             running += x
-            
+
         assert running == totalevents
         answer, answercoverage = None, None
         for t in range(128 - 37):
@@ -51,7 +52,7 @@ def analyze(mid, transpose=None, wrap=True, merge=False):
         realtranspose = 53 - answer
     else:
         realtranspose = transpose
-    
+
     # transpose
     if realtranspose != 0:
         print(f"Transposing...")
@@ -60,8 +61,9 @@ def analyze(mid, transpose=None, wrap=True, merge=False):
             for msg in track:
                 if msg.type in ('note_on', 'note_off'):
                     msg.note += realtranspose
-                    
-        print(f"Transposed tracks {'up' if realtranspose > 0 else 'down'} by {abs(realtranspose)} semitones")
+
+        print(
+            f"Transposed tracks {'up' if realtranspose > 0 else 'down'} by {abs(realtranspose)} semitones")
 
     # autowrap
     if wrap:
@@ -76,25 +78,23 @@ def analyze(mid, transpose=None, wrap=True, merge=False):
                         diff = llimit - msg.note
                         msg.note += 12 * ((diff - 1) // 12 + 1)
                         wrappedup += 1
-                        
+
                     if msg.note > rlimit:
                         diff = msg.note - rlimit
                         msg.note -= 12 * ((diff - 1) // 12 + 1)
                         wrappeddn += 1
-                        
+
         print(f"{wrappedup} note events were wrapped up")
         print(f"{wrappeddn} note events were wrapped down")
-    
-    # merge    
+
+    # merge
     if merge:
         mid.tracks.append(merge_tracks(mid.tracks))
         del mid.tracks[:-1]
 
     return mid
-    
-    
-        
-    
+
+
 #     fig, ax = plt.subplots()
 #     ax.bar(range(128), cnt)
 #     ax.set_title("Note Frequencies")

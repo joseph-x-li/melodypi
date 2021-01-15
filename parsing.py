@@ -1,38 +1,39 @@
 # https://github.com/vishnubob/python-midi
 # https://github.com/bspaans/python-mingus
 
-import mido, time
+import pygame
+import mido
+import time
 from mido import MidiFile
 from analysis import analyze
 
 
 notedict = {
-    0 : "C",
-    1 : "C#/Db",
-    2 : "D",
-    3 : "D#/Eb",
-    4 : "E",
-    5 : "F",
-    6 : "F#/Gb",
-    7 : "G",
-    8 : "G#/Ab",
-    9 : "A",
-    10 : "A#/Bb",
-    11 : "B",
+    0: "C",
+    1: "C#/Db",
+    2: "D",
+    3: "D#/Eb",
+    4: "E",
+    5: "F",
+    6: "F#/Gb",
+    7: "G",
+    8: "G#/Ab",
+    9: "A",
+    10: "A#/Bb",
+    11: "B",
 }
+
 
 def note2beep(note):
     octave, mod = divmod(note, 12)
     ret = str(octave - 2) + notedict[mod]
     return ret
-    
 
 
-mid = analyze(MidiFile('Flying.mid'), merge=True)
+mid = analyze(MidiFile('camp.mid'), merge=False)
 
 mid.save("bruh.mid")
 
-import pygame
 
 def play_music(midi_filename):
     '''Stream music_file in a blocking manner'''
@@ -40,8 +41,9 @@ def play_music(midi_filename):
     pygame.mixer.music.load(midi_filename)
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy():
-        clock.tick(30) # check if playback has finished
-    
+        clock.tick(30)  # check if playback has finished
+
+
 # mixer config
 freq = 44100  # audio CD quality
 bitsize = -16   # unsigned 16 bit
@@ -54,6 +56,8 @@ pygame.mixer.music.set_volume(0.8)
 
 try:
     play_music("bruh.mid")
+    pygame.mixer.music.fadeout(1000)
+    pygame.mixer.music.stop()
 except KeyboardInterrupt:
     # if user hits Ctrl/C then exit
     # (works only in console mode)
