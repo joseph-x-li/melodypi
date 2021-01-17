@@ -30,9 +30,9 @@ def note2beep(note):
     return ret
 
 
-mid = analyze(MidiFile('camp.mid'), merge=False)
+mid = analyze(MidiFile('midi/camp.mid'), merge=False)
 
-mid.save("bruh.mid")
+mid.save("__generated.mid")
 
 
 def play_music(midi_filename):
@@ -55,7 +55,7 @@ pygame.mixer.init(freq, bitsize, channels, buffer)
 pygame.mixer.music.set_volume(0.8)
 
 try:
-    play_music("bruh.mid")
+    play_music("__generated.mid")
     pygame.mixer.music.fadeout(1000)
     pygame.mixer.music.stop()
 except KeyboardInterrupt:
